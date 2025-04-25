@@ -1,11 +1,10 @@
 import { EditorSettings } from "./common";
 import * as monaco from 'monaco-editor'
 
-
 export const isObsidianThemeDark = () => document.body.classList.contains("theme-dark");
 
 export function getThemeColor(themeColor: string): string {
-    let theme: string = "vs";
+    let theme = "vs";
     if (themeColor === "AUTO") {
         theme = isObsidianThemeDark() === true ? "vs-dark" : "vs";
     } else if (themeColor === "DARK") {
@@ -16,7 +15,7 @@ export function getThemeColor(themeColor: string): string {
     return theme;
 }
 
-export function genEditorSettings(setting: EditorSettings, language: string, minimap: boolean = true, wordwrap: boolean = false) {
+export function genEditorSettings(setting: EditorSettings, language: string, minimap = true, wordwrap = false) {
     let minimapFlag = setting.minimap;
     if (minimap === false) {
         minimapFlag = false;
@@ -30,7 +29,7 @@ export function genEditorSettings(setting: EditorSettings, language: string, min
         wordwrapFlag = wordwrap;
     }
 
-    let settings: monaco.editor.IStandaloneEditorConstructionOptions = {
+    const settings: monaco.editor.IStandaloneEditorConstructionOptions = {
         automaticLayout: true,
         language: getLanguage(language),
         theme: getThemeColor(setting.themeColor),
@@ -50,7 +49,11 @@ export function genEditorSettings(setting: EditorSettings, language: string, min
 
 export function getLanguage(extension: string) {
     switch (extension) {
+        case "latex":
+        case "tex":
         case "tikz":
+        case "sty":
+            return "latex";
         case "js":
         case "es6":
         case "jsx":
@@ -272,7 +275,6 @@ export function getLanguage(extension: string) {
         case "qs":
             return "qsharp";
         case "cs":
-        case "c#":
         case "csx":
         case "cake":
             return "csharp";

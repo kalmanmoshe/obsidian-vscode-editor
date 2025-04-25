@@ -8,6 +8,8 @@ import { t } from 'src/lang/helpers';
 import { FenceEditModal } from "./fenceEditModal";
 import { FenceEditContext } from "./fenceEditContext";
 import { mountCodeEditor } from "./mountCodeEditor";
+import { registerCustomVisuals } from "./registerCustomVisuals";
+
 
 declare module "obsidian" {
 	interface Workspace {
@@ -36,21 +38,19 @@ export default class CodeFilesPlugin extends Plugin {
 		};
 
 	async onload() {
-		console.warn("Loading Code Files Plugin");
+		console.log("Loading Code Files Plugin");
 		await this.loadSettings();
-
 		this.registerView(viewType, leaf => new CodeEditorView(leaf, this));
 
 		try {
 			this.registerExtensions(this.settings.extensions, viewType);
 		} catch (e) {
-			const exts = this.settings.extensions.join(", ")
 			new Notification(t("REGISTE_ERROR"), {
 				body: t("REGISTE_ERROR_DESC", e.message)
 			});
 		}
 
-
+		registerCustomVisuals();
 		this.registerEvent(
 			this.app.workspace.on("file-menu", (menu, file) => {
 				menu.addItem((item) => {
@@ -95,7 +95,6 @@ export default class CodeFilesPlugin extends Plugin {
 
 		//internal links
 		this.observer = new MutationObserver(async (mutation) => {
-			console.warn("MutationObserver", mutation);
 			if (mutation.length !== 1) return;
 			if (mutation[0].addedNodes.length !== 1) return;
 			if (this.hover.linkText === null) return;
@@ -184,5 +183,5 @@ export default class CodeFilesPlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
-
+	
 }

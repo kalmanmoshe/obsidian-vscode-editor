@@ -1,5 +1,5 @@
 {
-	"name": "obsidian-vscode-editor",
+	"name": "my-obsidian-vscode-editor",
 	"version": "1.0.4",
 	"description": "Edit Code Files like VSCode.",
 	"main": "src/main.js",

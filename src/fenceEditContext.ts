@@ -6,8 +6,11 @@ import { getLanguage } from "./ObsidianUtils";
 
 export class FenceEditContext {
 	private start = 0;
+
 	private end = 0;
+
 	private editor?: Editor;
+
 	private isInValidFence = false;
 
 	private constructor(private plugin: CodeFilesPlugin) {

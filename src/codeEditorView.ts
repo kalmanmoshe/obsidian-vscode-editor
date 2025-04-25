@@ -3,14 +3,15 @@ import { TextFileView, TFile, WorkspaceLeaf } from "obsidian";
 import { viewType } from "./common";
 import CodeFilesPlugin from "./main";
 import * as monaco from 'monaco-editor'
-import { getLanguage, getThemeColor, genEditorSettings } from "./ObsidianUtils";
+import { genEditorSettings } from "./ObsidianUtils";
+import { UserEventHandler } from "./userEventHandler";
 
 
 export class CodeEditorView extends TextFileView {
 
 	value = "";
 	monacoEditor: monaco.editor.IStandaloneCodeEditor;
-
+	eventHandler: UserEventHandler;
 
 	constructor(leaf: WorkspaceLeaf, private plugin: CodeFilesPlugin) {
 		super(leaf);
@@ -20,31 +21,29 @@ export class CodeEditorView extends TextFileView {
 	execute order: onOpen -> onLoadFile -> setViewData -> onUnloadFile -> onClose
 	*/
 	async onOpen() {
-		console.warn("CodeEditorView onOpen", this.file?.path);
+		this.file?.extension;
 		await super.onOpen();
 	}
 
 	async onLoadFile(file: TFile) {
-
-		let setting = genEditorSettings(this.plugin.settings, this.file?.extension ?? "");
+		const setting = genEditorSettings(this.plugin.settings, this.file?.extension ?? "");
 		this.monacoEditor = monaco.editor.create(this.contentEl, setting);
 
 		this.monacoEditor.onDidChangeModelContent(() => {
 			this.requestSave();
 		});
-
+		this.eventHandler = new UserEventHandler(this.plugin, this.monacoEditor);
 		this.addCtrlKeyWheelEvents();
 		this.addKeyEvents();
-
-		// const model = this.monacoEditor.getModel();
-		// monaco.editor.setModelLanguage(model, this.getLanguage());
+		
 		await super.onLoadFile(file);
 	}
 
 	async onUnloadFile(file: TFile) {
-		window.removeEventListener('keydown', this.keyHandle, true);
+		window.removeEventListener('keydown', this.eventHandler.handleKeyDown.bind(this.eventHandler), true);
 		await super.onUnloadFile(file);
 		this.monacoEditor.dispose();
+		this.monacoEditor = null!;
 	}
 
 	async onClose() {
@@ -81,72 +80,12 @@ export class CodeEditorView extends TextFileView {
 	}
 
 	private addKeyEvents = () => {
-		window.addEventListener('keydown', this.keyHandle, true);
+		window.addEventListener('keydown', this.eventHandler.handleKeyDown.bind(this.eventHandler), true);
 	}
 
 	private addCtrlKeyWheelEvents = () => {
-		this.containerEl.addEventListener('wheel', this.mousewheelHandle, true);
+		this.containerEl.addEventListener('wheel', this.eventHandler.mousewheelHandle.bind(this.eventHandler), true);
 
 	}
-
-	/*
-	修复不支持 `ctrl + 按键`快捷键的问题
-	原因是obsidian在app.js中增加了全局的keydown并且useCapture为true，猜测可能是为了支持快捷键就把阻止了子元素的事件的处理了
-	*/
-	private keyHandle = (event: KeyboardEvent) => {
-		const ctrlMap = new Map<string, string>([
-			['f', 'actions.find'],
-			['h', 'editor.action.startFindReplaceAction'],
-			['/', 'editor.action.commentLine'],
-			['Enter', 'editor.action.insertLineAfter'],
-			['[', 'editor.action.outdentLines'],
-			[']', 'editor.action.indentLines'],
-			['d', 'editor.action.copyLinesDownAction'],
-			['v', 'paste'],
-		]);
-		if (event.ctrlKey) {
-			const triggerName = ctrlMap.get(event.key);
-			if (triggerName) {
-				if (triggerName === 'paste') {
-					navigator.clipboard.readText().then((clipboard) => {
-						this.monacoEditor.trigger('source', triggerName, {text: clipboard });
-					})
-				}
-				else {
-					this.monacoEditor.trigger('source', triggerName, null);
-				}
-			}
-		}
-
-
-		if (event.altKey) {
-			if (event.key === 'z') {
-				this.plugin.settings.wordWrap = !this.plugin.settings.wordWrap;
-				this.plugin.saveSettings();
-				this.monacoEditor.updateOptions({
-					wordWrap: this.plugin.settings.wordWrap ? "on" : "off",
-				})
-
-			}
-		}
-
-	}
-
-	private mousewheelHandle = (event: WheelEvent) => {
-		if (event.ctrlKey) {
-			let delta = 0 < event.deltaY ? 1 : -1;
-			this.plugin.settings.fontSize += delta;
-			this.plugin.saveSettings();
-			this.monacoEditor.updateOptions({
-				fontSize: this.plugin.settings.fontSize,
-			})
-			// Stop event propagation, so that the editor doesn't scroll
-			// scroll is monaco-editor's default behavior
-			event.stopPropagation();
-		}
-	}
-
-
-
 
 }

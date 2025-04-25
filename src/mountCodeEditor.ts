@@ -10,20 +10,25 @@ export class mountCodeEditor {
 	monacoEditor: monaco.editor.IStandaloneCodeEditor;
 	plugin: CodeFilesPlugin;
 
-	constructor(contentEl: HTMLElement, plugin: CodeFilesPlugin, code: string, language: string, miniMap: boolean = true, wordWrap: boolean = false) {
+	constructor(
+		contentEl: HTMLElement,
+		plugin: CodeFilesPlugin,
+		code: string,
+		language: string,
+		miniMap = true,
+		wordWrap = false
+	) {
 		this.contentEl = contentEl;
 		this.plugin = plugin;
 		this.value = code;
-
-		let setting = genEditorSettings(this.plugin.settings, language, miniMap, wordWrap);
-		this.monacoEditor = monaco.editor.create(this.contentEl, setting);
+		const settings = genEditorSettings(this.plugin.settings, language, miniMap, wordWrap);
+		console.log("mountCodeEditor", language,settings);
+		this.monacoEditor = monaco.editor.create(this.contentEl, settings);
 		this.monacoEditor.setValue(this.value);
-		console.log("mountCodeEditor", this.monacoEditor);
 	}
 
 	getValue() {
 		return this.monacoEditor.getValue();
 	}
-
-
 }
+

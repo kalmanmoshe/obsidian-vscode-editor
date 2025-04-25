@@ -2,10 +2,11 @@ import { Modal, Notice } from "obsidian";
 import { mountCodeEditor } from "./mountCodeEditor";
 import CodeFilesPlugin from "./main";
 import { FenceEditContext } from "./fenceEditContext";
+import { UserEventHandler } from "./userEventHandler";
 
 export class FenceEditModal extends Modal {
 	private codeEditor: mountCodeEditor;
-
+	eventHandler: UserEventHandler;
 	private constructor(
 		private plugin: CodeFilesPlugin,
 		private code: string,
@@ -13,25 +14,26 @@ export class FenceEditModal extends Modal {
 		private onSave: (changedCode: string) => void
 	) {
 		super(plugin.app);
+		this.language="latex"
 	}
 
 	onOpen() {
 		super.onOpen();
-
 		this.codeEditor = new mountCodeEditor(
 			this.contentEl,
 			this.plugin,
 			this.code,
 			this.language,
 		);
-
+		this.eventHandler = new UserEventHandler(this.plugin, this.codeEditor.monacoEditor);
+		window.addEventListener('keydown', this.eventHandler.handleKeyDown.bind(this.eventHandler),true);
 		this.modalEl.setCssProps({
 			"--dialog-width": "90vw",
 			"--dialog-height": "90vh",
 		});
 		this.modalEl.style.height = "var(--dialog-height)";
 
-		let closeButton = this.modalEl.querySelector<HTMLDivElement>(
+		const closeButton = this.modalEl.querySelector<HTMLDivElement>(
 			".modal-close-button"
 		)
 		closeButton!.style.background = "var(--modal-background)";
@@ -39,12 +41,14 @@ export class FenceEditModal extends Modal {
 	}
 
 	onClose() {
+		window.removeEventListener('keydown', this.eventHandler.handleKeyDown.bind(this.eventHandler), true);
 		super.onClose();
 		this.onSave(this.codeEditor.getValue());
 	}
 
 	static openOnCurrentCode(plugin: CodeFilesPlugin) {
 		const context = FenceEditContext.create(plugin);
+
 		if (!context.isInFence()) {
 			new Notice("Your cursor is currently not in a valid code block.");
 			return;
