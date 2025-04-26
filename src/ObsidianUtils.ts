@@ -28,10 +28,9 @@ export function genEditorSettings(setting: EditorSettings, language: string, min
     if (wordwrap === true) {
         wordwrapFlag = wordwrap;
     }
-
     const settings: monaco.editor.IStandaloneEditorConstructionOptions = {
         automaticLayout: true,
-        language: getLanguage(language),
+        language: getLanguage(language.toLowerCase()),
         theme: getThemeColor(setting.themeColor),
         lineNumbers: setting.lineNumbers ? "on" : "off",
         wordWrap: wordwrapFlag ? "on" : "off",
@@ -275,6 +274,8 @@ export function getLanguage(extension: string) {
         case "qs":
             return "qsharp";
         case "cs":
+        case "c#":
+        case "csharp":
         case "csx":
         case "cake":
             return "csharp";

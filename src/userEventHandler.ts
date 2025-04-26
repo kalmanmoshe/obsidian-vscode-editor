@@ -8,10 +8,9 @@ export class UserEventHandler {
 		this.plugin = plugin;
 		this.editor = editor;
 	}
-    
+
 
 	handleKeyDown(event: KeyboardEvent) {
-        console.log("handleKeyDown", event,this.editor.hasTextFocus());
 		if(!this.editor.hasTextFocus())return;
 		const ctrlMap = new Map<string, string>([
 			['f', 'actions.find'],

@@ -14,7 +14,6 @@ export class FenceEditModal extends Modal {
 		private onSave: (changedCode: string) => void
 	) {
 		super(plugin.app);
-		this.language="latex"
 	}
 
 	onOpen() {
