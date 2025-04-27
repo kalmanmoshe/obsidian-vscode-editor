@@ -25,7 +25,7 @@ export class FenceEditModal extends Modal {
 			this.language,
 		);
 		this.eventHandler = new UserEventHandler(this.plugin, this.codeEditor.monacoEditor);
-		window.addEventListener('keydown', this.eventHandler.handleKeyDown.bind(this.eventHandler),true);
+		window.addEventListener('keydown', this.eventHandler.handleKeyDown,true);
 		this.modalEl.setCssProps({
 			"--dialog-width": "90vw",
 			"--dialog-height": "90vh",
@@ -40,7 +40,8 @@ export class FenceEditModal extends Modal {
 	}
 
 	onClose() {
-		window.removeEventListener('keydown', this.eventHandler.handleKeyDown.bind(this.eventHandler), true);
+		window.removeEventListener('keydown', this.eventHandler.handleKeyDown, true);
+		this.eventHandler = null!;
 		super.onClose();
 		this.onSave(this.codeEditor.getValue());
 	}

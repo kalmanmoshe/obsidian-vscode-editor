@@ -3,7 +3,7 @@ import CodeFilesPlugin from "./main";
 
 
 import { getLanguage } from "./ObsidianUtils";
-
+const codeBlockRegex = /^\s*(`|~){3,}/;
 export class FenceEditContext {
 	private start = 0;
 
@@ -30,18 +30,24 @@ export class FenceEditContext {
 
 		this.start = cursor.line;
 		this.end = cursor.line;
-		do {
-			this.start--;
-		} while (
+		const codeBlockStarts=this.editor?.getValue().split("\n").slice(0,this.start).filter((line) => line.match(codeBlockRegex)).length;
+		console.log("codeBlockStarts",codeBlockStarts)
+		while (
 			this.start >= 0 &&
-			!this.editor.getLine(this.start).startsWith("```")
-		);
-		do {
+			!this.editor.getLine(this.start).match(codeBlockRegex)
+		){
+			this.start--;
+		}
+		if(this.start===this.end){
 			this.end++;
-		} while (
+		}
+		while (
 			this.end < this.editor.lineCount() &&
-			!this.editor.getLine(this.end).startsWith("```")
-		);
+			!this.editor.getLine(this.end).match(codeBlockRegex)
+		){
+			this.end++;
+		}
+		console.log("this.FenceRditContext",this)
 	}
 
 	private validateFence() {
@@ -57,7 +63,7 @@ export class FenceEditContext {
 
 		// check in front the current Fence, if there is an uneven number of fences, we are not in a valid fence 
 		for (let i = 0; i < this.start; i++) {
-			if (this.editor.getLine(i).startsWith("```")) {
+			if (this.editor.getLine(i).match(codeBlockRegex)) {
 				fenceLines++;
 			}
 		}

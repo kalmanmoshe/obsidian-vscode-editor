@@ -1,4 +1,3 @@
-
 import { TextFileView, TFile, WorkspaceLeaf } from "obsidian";
 import { viewType } from "./common";
 import CodeFilesPlugin from "./main";
@@ -33,14 +32,13 @@ export class CodeEditorView extends TextFileView {
 			this.requestSave();
 		});
 		this.eventHandler = new UserEventHandler(this.plugin, this.monacoEditor);
-		this.addCtrlKeyWheelEvents();
-		this.addKeyEvents();
+		this.addEvents();
 		
 		await super.onLoadFile(file);
 	}
 
 	async onUnloadFile(file: TFile) {
-		window.removeEventListener('keydown', this.eventHandler.handleKeyDown.bind(this.eventHandler), true);
+		this.removeEvents();
 		await super.onUnloadFile(file);
 		this.monacoEditor.dispose();
 		this.monacoEditor = null!;
@@ -79,13 +77,13 @@ export class CodeEditorView extends TextFileView {
 		this.monacoEditor.setValue('');
 	}
 
-	private addKeyEvents = () => {
-		window.addEventListener('keydown', this.eventHandler.handleKeyDown.bind(this.eventHandler), true);
+	private addEvents(){
+		window.addEventListener('keydown', this.eventHandler.handleKeyDown, true);
+		this.containerEl.addEventListener('wheel', this.eventHandler.mousewheelHandle, true);
 	}
-
-	private addCtrlKeyWheelEvents = () => {
-		this.containerEl.addEventListener('wheel', this.eventHandler.mousewheelHandle.bind(this.eventHandler), true);
-
+	private removeEvents(){
+		window.removeEventListener('keydown', this.eventHandler.handleKeyDown, true);
+		this.containerEl.removeEventListener('wheel', this.eventHandler.mousewheelHandle, true);
 	}
 
 }
