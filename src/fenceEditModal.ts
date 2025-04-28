@@ -46,8 +46,7 @@ export class FenceEditModal extends Modal {
 		this.onSave(this.codeEditor.getValue());
 	}
 
-	static openOnCurrentCode(plugin: CodeFilesPlugin) {
-		const context = FenceEditContext.create(plugin);
+	static openOnCurrentCode(plugin: CodeFilesPlugin,context: FenceEditContext) {
 
 		if (!context.isInFence()) {
 			new Notice("Your cursor is currently not in a valid code block.");
@@ -56,9 +55,7 @@ export class FenceEditModal extends Modal {
 
 		const fenceData = context.getFenceData();
 
-		if (!fenceData) {
-			return;
-		}
+		if (!fenceData) return;
 
 		new FenceEditModal(
 			plugin,
