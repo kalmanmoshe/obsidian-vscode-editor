@@ -78,14 +78,15 @@ export default class CodeFilesPlugin extends Plugin {
 
 		this.registerEvent(
 			this.app.workspace.on("editor-menu", (menu) => {
-				if (!FenceEditContext.create(this).isInFence()) {
+				const context = FenceEditContext.create(this);
+				if (!context.isInFence()) {
 					return;
 				}
 				menu.addItem((item) => {
 					item.setTitle(t("EDIT_FENCE"))
 						.setIcon("code")
 						.onClick(() => {
-							FenceEditModal.openOnCurrentCode(this);
+							FenceEditModal.openOnCurrentCode(this,context);
 						});
 				});
 			})

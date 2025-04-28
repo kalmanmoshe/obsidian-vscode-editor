@@ -14,8 +14,8 @@ export class FenceEditContext {
 	private isInValidFence = false;
 
 	private constructor(private plugin: CodeFilesPlugin) {
-		this.initializeStartAndEnd();
 		this.validateFence();
+		console.log("isInValidFence",this.isInValidFence)
 	}
 
 	static create(plugin: CodeFilesPlugin) {
@@ -23,7 +23,6 @@ export class FenceEditContext {
 	}
 
 	private initializeStartAndEnd() {
-		this.editor = this.plugin.app.workspace.activeEditor?.editor;
 		const cursor = this.editor?.getCursor();
 
 		if (!this.editor || !cursor) return;
@@ -31,7 +30,6 @@ export class FenceEditContext {
 		this.start = cursor.line;
 		this.end = cursor.line;
 		const codeBlockStarts=this.editor?.getValue().split("\n").slice(0,this.start).filter((line) => line.match(codeBlockRegex)).length;
-		console.log("codeBlockStarts",codeBlockStarts)
 		while (
 			this.start >= 0 &&
 			!this.editor.getLine(this.start).match(codeBlockRegex)
@@ -47,32 +45,27 @@ export class FenceEditContext {
 		){
 			this.end++;
 		}
-		console.log("this.FenceRditContext",this)
+		console.log("this.FenceEditContext", this.end, this.start)
+		console.log("this.FenceEditContext", this.editor.getLine(this.start), this.editor.getLine(this.end))
 	}
 
 	private validateFence() {
-		if (!this.editor) {
-			return;
-		}
-
-		if (this.start < 0 || this.end >= this.editor.lineCount()) {
-			return;
-		}
-
-		let fenceLines = 0;
-
-		// check in front the current Fence, if there is an uneven number of fences, we are not in a valid fence 
-		for (let i = 0; i < this.start; i++) {
-			if (this.editor.getLine(i).match(codeBlockRegex)) {
-				fenceLines++;
-			}
-		}
-
-		if (fenceLines % 2 === 1) {
-			return;
-		}
-
-		this.isInValidFence = true;
+		this.editor = this.plugin.app.workspace.activeEditor?.editor;
+		const file = this.plugin.app.workspace.activeEditor?.file;
+		if (!file) return this.isInValidFence = false;
+		const fileCache = app.metadataCache.getFileCache(file);
+		if (!fileCache?.sections) return this.isInValidFence = false;
+		const cursor = this.editor?.getCursor();
+		if (!cursor) return this.isInValidFence = false;
+		
+		const section = fileCache.sections.find((section) => {
+			if (section.type !== "code") return false;
+			return (
+				section.position.start.line <= cursor.line &&
+				section.position.end.line >= cursor.line
+			);
+		})
+		this.isInValidFence = !!section;
 	}
 
 	isInFence() {
@@ -80,6 +73,7 @@ export class FenceEditContext {
 	}
 
 	getFenceData() {
+		this.initializeStartAndEnd();
 		if (!this.editor || !this.isInValidFence) return null;
 
 		let editorContent = "";
@@ -88,7 +82,10 @@ export class FenceEditContext {
 		}
 
 		const content = editorContent.slice(0, editorContent.length - 1);
-		const langKey = this.editor.getLine(this.start).slice(3).trim();
+		const langKey = this.editor.getLine(this.start)
+			.replace(codeBlockRegex, "")
+			.match(/\s*(\w)+/)?.[0]||"";
+
 		const language = getLanguage(langKey);
 
 		return { content, language };
