@@ -12,7 +12,6 @@ export class FenceEditContext {
 
 	private constructor(private plugin: CodeFilesPlugin) {
 		this.validateFence();
-		console.log("isInValidFence",this.isInValidFence)
 	}
 
 	static create(plugin: CodeFilesPlugin) {

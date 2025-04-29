@@ -22,7 +22,6 @@ export class mountCodeEditor {
 		this.plugin = plugin;
 		this.value = code;
 		const settings = genEditorSettings(this.plugin.settings, language, miniMap, wordWrap);
-		console.log("mountCodeEditor", language,settings);
 		this.monacoEditor = monaco.editor.create(this.contentEl, settings);
 		this.monacoEditor.setValue(this.value);
 	}
