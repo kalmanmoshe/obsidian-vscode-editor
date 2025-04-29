@@ -6,11 +6,8 @@ import { getLanguage } from "./ObsidianUtils";
 const codeBlockRegex = /^\s*(`|~){3,}/;
 export class FenceEditContext {
 	private start = 0;
-
 	private end = 0;
-
 	private editor?: Editor;
-
 	private isInValidFence = false;
 
 	private constructor(private plugin: CodeFilesPlugin) {
@@ -21,32 +18,40 @@ export class FenceEditContext {
 	static create(plugin: CodeFilesPlugin) {
 		return new FenceEditContext(plugin);
 	}
+	private shiftSections(shift: number,sections: {start:number,end:number}[]) {
+		return sections.map(({start,end})=>({
+			start:start+shift,
+			end:end+shift
+		}))
+	}
+	private parseInternalCodeBlock(codeBlockText: string): {start: number,end:number}[] {
+		const codeBlockLines = codeBlockText.split("\n")
+		const startIndex = codeBlockLines.findIndex((line) => codeBlockRegex.test(line));
+		if (startIndex === -1) return [];
+		const codeBlockDelimiter = codeBlockLines[startIndex].match(codeBlockRegex)?.[0] as string;
+		let endIndex = codeBlockLines.findIndex((line,index) => index > startIndex 
+		&& line.match(new RegExp(`^\\s*${codeBlockDelimiter.charAt(0)}{${codeBlockDelimiter.length},}\\s*$`)));
+		if (endIndex === -1) endIndex = codeBlockLines.length-1;
+		return [
+			{start:startIndex,end:endIndex},
+			...this.shiftSections(startIndex+1,this.parseInternalCodeBlock(codeBlockLines.slice(startIndex+1,endIndex).join("\n"))),
+			...this.shiftSections(endIndex+1,this.parseInternalCodeBlock(codeBlockLines.slice(endIndex+1).join("\n")))
+		]
+	}
 
 	private initializeStartAndEnd() {
 		const cursor = this.editor?.getCursor();
 
 		if (!this.editor || !cursor) return;
-
-		this.start = cursor.line;
-		this.end = cursor.line;
-		const codeBlockStarts=this.editor?.getValue().split("\n").slice(0,this.start).filter((line) => line.match(codeBlockRegex)).length;
-		while (
-			this.start >= 0 &&
-			!this.editor.getLine(this.start).match(codeBlockRegex)
-		){
-			this.start--;
+		const codeBlockLines = this.editor.getValue().split("\n").slice(this.start+1,this.end);
+		const codeBlockText=codeBlockLines.join("\n");
+		const sections = this.shiftSections(this.start+1,this.parseInternalCodeBlock(codeBlockText))
+		const section = sections.find((section) => section.start <= cursor.line &&
+		section.end >= cursor.line);
+		if (section) {
+			this.start = section.start;
+			this.end = section.end;
 		}
-		if(this.start===this.end){
-			this.end++;
-		}
-		while (
-			this.end < this.editor.lineCount() &&
-			!this.editor.getLine(this.end).match(codeBlockRegex)
-		){
-			this.end++;
-		}
-		console.log("this.FenceEditContext", this.end, this.start)
-		console.log("this.FenceEditContext", this.editor.getLine(this.start), this.editor.getLine(this.end))
 	}
 
 	private validateFence() {
@@ -65,6 +70,7 @@ export class FenceEditContext {
 				section.position.end.line >= cursor.line
 			);
 		})
+		if(section){this.start = section.position.start.line; this.end = section.position.end.line;}
 		this.isInValidFence = !!section;
 	}
 
