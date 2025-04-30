@@ -1,5 +1,10 @@
 import CodeFilesPlugin from "./main";
 import * as monaco from 'monaco-editor'
+function getCharFromCode(code: string) {
+	if (code.startsWith("Key")) return code.slice(3).toLowerCase();
+	if (code.startsWith("Digit")) return code.slice(5);
+	return "";
+  }
 
 export class UserEventHandler {
 	private plugin: CodeFilesPlugin;
@@ -8,7 +13,6 @@ export class UserEventHandler {
 		this.plugin = plugin;
 		this.editor = editor;
 	}
-
 
     handleKeyDown = (event: KeyboardEvent) =>  {
 		if(!this.editor.hasTextFocus())return;
@@ -22,8 +26,10 @@ export class UserEventHandler {
 			['d', 'editor.action.copyLinesDownAction'],
 			['v', 'paste'],
 		]);
+		
+
 		if (event.ctrlKey) {
-			const triggerName = ctrlMap.get(event.key);
+			const triggerName = ctrlMap.get(getCharFromCode(event.code));
 			if (triggerName) {
 				if(triggerName === 'paste'){
 					navigator.clipboard.readText().then((clipboard) => {
