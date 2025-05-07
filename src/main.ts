@@ -20,7 +20,18 @@ declare module "obsidian" {
 		): EventRef;
 	}
 }
-
+// fix no worker error (created a dummy worker)
+window.MonacoEnvironment = {
+	//@ts-expect-error
+	getWorker: function (_moduleId, _label) {
+	return {
+		postMessage() {},
+		addEventListener() {},
+		removeEventListener() {},
+		terminate() {}
+	};
+	}
+  };
 
 export default class CodeFilesPlugin extends Plugin {
 	settings: EditorSettings;
