@@ -28,7 +28,7 @@ export class UserEventHandler {
 		]);
 		
 
-		if (event.ctrlKey) {
+		if (event.ctrlKey||event.metaKey) {
 			const triggerName = ctrlMap.get(getCharFromCode(event.code));
 			if (triggerName) {
 				if(triggerName === 'paste'){
@@ -70,7 +70,7 @@ export class UserEventHandler {
 
 	}
 	mousewheelHandle = (event: WheelEvent) => {
-		if (event.ctrlKey) {
+		if (event.ctrlKey||event.metaKey) {
 			const delta = 0 < event.deltaY ? 1 : -1;
 			this.plugin.settings.fontSize += delta;
 			this.plugin.saveSettings();
