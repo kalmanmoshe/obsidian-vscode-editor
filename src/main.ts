@@ -9,6 +9,10 @@ import { FenceEditModal } from "./fenceEditModal";
 import { FenceEditContext } from "./fenceEditContext";
 import { mountCodeEditor } from "./mountCodeEditor";
 import { registerCustomVisuals } from "./registerCustomVisuals";
+import 'monaco-editor/esm/vs/editor/editor.main';
+import { trackMonacoLanguages } from "./ObsidianUtils";
+
+
 
 
 declare module "obsidian" {
@@ -60,7 +64,7 @@ export default class CodeFilesPlugin extends Plugin {
 				body: t("REGISTE_ERROR_DESC", e.message)
 			});
 		}
-
+		trackMonacoLanguages()
 		registerCustomVisuals();
 		this.registerEvent(
 			this.app.workspace.on("file-menu", (menu, file) => {

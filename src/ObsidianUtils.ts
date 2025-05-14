@@ -45,282 +45,210 @@ export function genEditorSettings(setting: EditorSettings, language: string, min
     }
     return settings;
 }
+    const languageExtensions: Record<string, string[]> = {
+  latex: ["tex", "sty"],
+  javascript: ["js", "es6", "jsx", "cjs", "mjs"],
+  typescript: ["ts", "tsx", "cts", "mts"],
+  json: ["json"],
+  python: ["py", "rpy", "pyu", "cpy", "gyp", "gypi"],
+  css: ["css"],
+  html: ["html", "htm", "shtml", "xhtml", "mdoc", "jsp", "asp", "aspx", "jshtm"],
+  cpp: ["cpp", "c++", "cc", "cxx", "hpp", "hh", "hxx"],
+  graphql: ["graphql", "gql"],
+  java: ["java", "jav"],
+  php: ["php", "php4", "php5", "phtml", "ctp"],
+  sql: ["sql"],
+  yaml: ["yaml", "yml"],
+  bat: ["bat", "batch", "cmd"],
+  lua: ["lua"],
+  ruby: ["rb", "rbx", "rjs", "gemspec"],
+  markdown: ["markdown", "mdown", "mkdn", "mkd", "mdwn", "mdtxt", "mdtext", "mdx"],
+  r: ["r", "rhistory", "rmd", "rprofile", "rt"],
+  freemarker2: ["ftl", "ftlh", "ftlx"],
+  restructuredtext: ["rst"],
+  hcl: ["hcl", "tf", "tfvars"],
+  ini: ["ini", "properties", "gitconfig"],
+  pug: ["pug", "jade"],
+  dart: ["dart"],
+  rust: ["rs", "rlib"],
+  less: ["less"],
+  apex: ["cls"],
+  tcl: ["tcl"],
+  abap: ["abap"],
+  ecl: ["ecl"],
+  pla: ["pla"],
+  vb: ["vb"],
+  sb: ["sb"],
+  m3: ["m3", "i3", "mg", "ig"],
+  go: ["go"],
+  mips: ["s"],
+  perl: ["pl", "pm"],
+  wgsl: ["wgsl"],
+  twig: ["twig"],
+  scss: ["scss"],
+  redis: ["redis"],
+  shell: ["sh", "bash"],
+  scala: ["scala", "sc", "sbt"],
+  julia: ["jl"],
+  msdax: ["dax", "msdax"],
+  lexon: ["lex"],
+  razor: ["cshtml"],
+  bicep: ["bicep"],
+  azcli: ["azcli"],
+  swift: ["swift"],
+  flow9: ["flow"],
+  xml: ["xml", "xsd", "dtd", "ascx", "csproj", "config", "props", "targets", "wxi", "wxl", "wxs", "xaml", "svgz", "opf", "xslt", "xsl"],
+  kotlin: ["kt", "kts"],
+  cypher: ["cypher", "cyp"],
+  coffeescript: ["coffee"],
+  fsharp: ["fs", "fsi", "ml", "mli", "fsx", "fsscript"],
+  scheme: ["scm", "ss", "sch", "rkt"],
+  sparql: ["rq"],
+  aes: ["aes"],
+  liquid: ["liquid", "html.liquid"],
+  pascal: ["pas", "p", "pp"],
+  elixir: ["ex", "exs"],
+  qsharp: ["qs"],
+  csharp: ["cs", "c#", "csharp", "csx", "cake"],
+  clojure: ["clj", "cljs", "cljc", "edn"],
+  cameligo: ["mligo"],
+  sol: ["sol"],
+  proto: ["proto"],
+  postiats: ["dats", "sats", "hats"],
+  pascaligo: ["ligo"],
+  dockerfile: ["dockerfile"],
+  handlebars: ["handlebars", "hbs"],
+  powerquery: ["pq", "pqm"],
+  "objective-c": ["m"],
+  systemverilog: ["sv", "svh"],
+  verilog: ["v", "vh"],
+  st: ["st", "iecst", "iecplc", "lc3lib"],
+  c: ["c", "h"],
+};
 
-export function getLanguage(extension: string) {
-    switch (extension) {
-        case "latex":
-        case "tex":
-        case "tikz":
-        case "sty":
-            return "latex";
-        case "js":
-        case "es6":
-        case "jsx":
-        case "cjs":
-        case "mjs":
-            return "javascript";
-        case "ts":
-        case "tsx":
-        case "cts":
-        case "mts":
-            return "typescript";
-        case "json":
-            return "json";
-        case "py":
-        case "rpy":
-        case "pyu":
-        case "cpy":
-        case "gyp":
-        case "gypi":
-            return "python";
-        case "css":
-            return "css";
-        case "html":
-        case "htm":
-        case "shtml":
-        case "xhtml":
-        case "mdoc":
-        case "jsp":
-        case "asp":
-        case "aspx":
-        case "jshtm":
-            return "html";
-        case "cpp":
-        case "c++":
-        case "cc":
-        case "cxx":
-        case "hpp":
-        case "hh":
-        case "hxx":
-            return "cpp";
-        case "graphql":
-        case "gql":
-            return "graphql";
-        case "java":
-        case "jav":
-            return "java";
-        case "php":
-        case "php4":
-        case "php5":
-        case "phtml":
-        case "ctp":
-            return "php";
-        case "sql":
-            return "sql";
-        case "yaml":
-        case "yml":
-            return "yaml";
-        case "bat":
-        case "batch":
-            return "bat";
-        case "lua":
-            return "lua";
-        case "rb":
-        case "rbx":
-        case "rjs":
-        case "gemspec":
-            return "ruby";
-        case "markdown":
-        case "mdown":
-        case "mkdn":
-        case "mkd":
-        case "mdwn":
-        case "mdtxt":
-        case "mdtext":
-        case "mdx":
-            return "markdown";
-        case "r":
-        case "rhistory":
-        case "rmd":
-        case "rprofile":
-        case "rt":
-            return "r";
-        case "ftl":
-        case "ftlh":
-        case "ftlx":
-            return "freemarker2";
-        case "rst":
-            return "restructuredtext";
-        case "hcl":
-        case "tf":
-        case "tfvars":
-            return "hcl";
-        case "ini":
-        case "properties":
-        case "gitconfig":
-            return "ini";
-        case "pug":
-        case "jade":
-            return "pug";
-        case "dart":
-            return "dart";
-        case "rs":
-        case "rlib":
-            return "rust";
-        case "less":
-            return "less";
-        case "cls":
-            return "apex";
-        case "tcl":
-            return "tcl";
-        case "abap":
-            return "abap";
-        case "ecl":
-            return "ecl";
-        case "pla":
-            return "pla";
-        case "cmd":
-            return "bat";
-        case "vb":
-            return "vb";
-        case "sb":
-            return "sb";
-        case "m3":
-        case "i3":
-        case "mg":
-        case "ig":
-            return "m3";
-        case "go":
-            return "go";
-        case "s":
-            return "mips";
-        case "pl":
-        case "pm":
-            return "perl";
-        case "wgsl":
-            return "wgsl";
-        case "twig":
-            return "twig";
-        case "scss":
-            return "scss";
-        case "redis":
-            return "redis";
-        case "sh":
-        case "bash":
-            return "shell";
-        case "scala":
-        case "sc":
-        case "sbt":
-            return "scala";
-        case "jl":
-            return "julia";
-        case "dax":
-        case "msdax":
-            return "msdax";
-        case "lex":
-            return "lexon";
-        case "cshtml":
-            return "razor";
-        case "bicep":
-            return "bicep";
-        case "azcli":
-            return "azcli";
-        case "swift":
-        case "Swift":
-            return "swift";
-        case "flow":
-            return "flow9";
-        case "xml":
-        case "xsd":
-        case "dtd":
-        case "ascx":
-        case "csproj":
-        case "config":
-        case "props":
-        case "targets":
-        case "wxi":
-        case "wxl":
-        case "wxs":
-        case "xaml":
-        case "svgz":
-        case "opf":
-        case "xslt":
-        case "xsl":
-            return "xml";
-        case "kt":
-        case "kts":
-            return "kotlin";
-        case "cypher":
-        case "cyp":
-            return "cypher";
-        case "coffee":
-            return "coffeescript";
-        case "fs":
-        case "fsi":
-        case "ml":
-        case "mli":
-        case "fsx":
-        case "fsscript":
-            return "fsharp";
-        case "scm":
-        case "ss":
-        case "sch":
-        case "rkt":
-            return "scheme";
-        case "rq":
-            return "sparql";
-        case "aes":
-            return "aes";
-        case "liquid":
-        case "html.liquid":
-            return "liquid";
-        case "pas":
-        case "p":
-        case "pp":
-            return "pascal";
-        case "ex":
-        case "exs":
-            return "elixir";
-        case "qs":
-            return "qsharp";
-        case "cs":
-        case "c#":
-        case "csharp":
-        case "csx":
-        case "cake":
-            return "csharp";
-        case "clj":
-        case "cljs":
-        case "cljc":
-        case "edn":
-            return "clojure";
-        case "mligo":
-            return "cameligo";
-        case "sol":
-            return "sol";
-        case "proto":
-            return "proto";
-        case "dats":
-        case "sats":
-        case "hats":
-            return "postiats";
-        case "ligo":
-            return "pascaligo";
-        case "dockerfile":
-            return "dockerfile";
-        case "handlebars":
-        case "hbs":
-            return "handlebars";
-        case "pq":
-        case "pqm":
-            return "powerquery";
-        case "m":
-            return "objective-c";
-        case "sv":
-        case "svh":
-            return "systemverilog";
-        case "v":
-        case "vh":
-            return "verilog";
-        case "st":
-        case "iecst":
-        case "iecplc":
-        case "lc3lib":
-            return "st";
-        case "c":
-        case "h":
-            return "c";
-        default:
-            return "plaintext";
+const languageMap: Record<string, string> = {};
+
+function normalizeModeName(name: string): string {
+  return name
+    .replace(/^(x|s)tex$/, "latex")
+    .replace(/^jsx$/, "javascript")
+    .replace(/^c#$/, "csharp");
+}
+
+function onLanguageChange(source: "CodeMirror" | "Monaco") {
+  const monacoLanguages = monaco.languages.getLanguages();
+  const allowedLanguages = monacoLanguages.map(l => l.id);
+  const skippedLanguages: string[] = [];
+
+  // Remove unsupported languages from existing record
+  for (const lang of Object.keys(languageExtensions)) {
+    if (!allowedLanguages.includes(lang)) {
+      console.error(`Language ${lang} is not supported in monaco`);
+      delete languageExtensions[lang];
     }
+  }
+
+  // @ts-ignore
+  const modeInfo = window.CodeMirror.modeInfo as Array<{ name: string; mime: string; mode: string; ext?: string[] }>;
+
+  // eslint-disable-next-line prefer-const
+  for (let { name, mode, ext } of modeInfo) {
+    name = normalizeModeName(name);
+    mode = normalizeModeName(mode);
+
+    if (!allowedLanguages.includes(mode)) {
+      skippedLanguages.push(mode);
+      continue;
+    }
+
+    if (!languageExtensions[mode]) languageExtensions[mode] = [];
+
+    const existing = new Set(languageExtensions[mode].map(e => e.toLowerCase()));
+
+    const extsToAdd = ext?.map(e => e.toLowerCase()) ?? [name.toLowerCase()];
+    for (const e of extsToAdd) {
+      if (!existing.has(e)) {
+        languageExtensions[mode].push(e);
+        existing.add(e);
+      }
+    }
+
+    if (!existing.has(mode)) languageExtensions[mode].push(mode);
+  }
+
+  // Add in extensions from Monaco
+  for (const { id, extensions } of monacoLanguages) {
+    if (!languageExtensions[id]) languageExtensions[id] = [];
+
+    const existing = new Set(languageExtensions[id].map(e => e.toLowerCase()));
+
+    if (!extensions || extensions.length === 0) {
+      if (!existing.has(id)) languageExtensions[id].push(id);
+      continue;
+    }
+
+    for (const ext of extensions) {
+      const cleaned = ext.toLowerCase().replace(/^\./, "");
+      if (cleaned && !existing.has(cleaned)) {
+        languageExtensions[id].push(cleaned);
+        existing.add(cleaned);
+      }
+    }
+  }
+
+  rebuildLanguageMap();
+}
+
+function rebuildLanguageMap() {
+  Object.keys(languageMap).forEach(k => delete languageMap[k]);
+  for (const [language, extensions] of Object.entries(languageExtensions)) {
+    for (const ext of extensions) {
+      languageMap[ext.toLowerCase()] = language;
+    }
+  }
+}
+
+export function getLanguage(extension: string): string {
+  if (Object.keys(languageMap).length === 0)
+    onLanguageChange("Monaco");
+  return languageMap[extension.toLowerCase()] ?? "plaintext";
+}
+
+export function trackMonacoLanguages() {
+  try {
+    //@ts-expect-error
+    window.CodeMirror.modeInfo = trackArray(window.CodeMirror.modeInfo, () => onLanguageChange("CodeMirror"));
+  } catch (e) {
+    console.warn("Failed to proxy CodeMirror.modeInfo", e);
+  }
+
+  trackMonacoLanguagesChange(monaco, () => onLanguageChange("Monaco"));
+}
+
+function trackArray<T>(arr: T[], onChange: () => void): T[] {
+  return new Proxy(arr, {
+    set(target, prop, value) {
+      if (prop !== "length") onChange();
+      return Reflect.set(target, prop, value);
+    },
+    get(target, prop, receiver) {
+      const value = Reflect.get(target, prop, receiver);
+      if (typeof value === "function" && ["push", "splice", "pop", "shift", "unshift"].includes(prop as string)) {
+        return (...args: any[]) => {
+          onChange();
+          return (value as (...args: any[]) => any).apply(target, args);
+        };
+      }
+      return value;
+    }
+  });
+}
+
+function trackMonacoLanguagesChange(monaco: any, onChange: () => void) {
+  const original = monaco.languages.register;
+  monaco.languages.register = function (...args: any[]) {
+    const result = original.apply(this, args);
+    onChange();
+    return result;
+  };
 }
