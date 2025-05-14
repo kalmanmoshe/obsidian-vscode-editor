@@ -54,7 +54,6 @@ export class FenceEditModal extends Modal {
 		}
 
 		const fenceData = context.getFenceData();
-
 		if (!fenceData) return;
 
 		new FenceEditModal(

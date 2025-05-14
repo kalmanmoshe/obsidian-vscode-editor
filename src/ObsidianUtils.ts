@@ -1,5 +1,6 @@
 import { EditorSettings } from "./common";
 import * as monaco from 'monaco-editor'
+import CodeFilesPlugin from "./main";
 
 export const isObsidianThemeDark = () => document.body.classList.contains("theme-dark");
 
@@ -45,7 +46,8 @@ export function genEditorSettings(setting: EditorSettings, language: string, min
     }
     return settings;
 }
-    const languageExtensions: Record<string, string[]> = {
+
+const languageExtensions: Record<string, string[]> = {
   latex: ["tex", "sty"],
   javascript: ["js", "es6", "jsx", "cjs", "mjs"],
   typescript: ["ts", "tsx", "cts", "mts"],
@@ -150,7 +152,6 @@ function onLanguageChange(source: "CodeMirror" | "Monaco") {
 
   // @ts-ignore
   const modeInfo = window.CodeMirror.modeInfo as Array<{ name: string; mime: string; mode: string; ext?: string[] }>;
-
   // eslint-disable-next-line prefer-const
   for (let { name, mode, ext } of modeInfo) {
     name = normalizeModeName(name);
@@ -195,7 +196,6 @@ function onLanguageChange(source: "CodeMirror" | "Monaco") {
       }
     }
   }
-
   rebuildLanguageMap();
 }
 
@@ -214,7 +214,7 @@ export function getLanguage(extension: string): string {
   return languageMap[extension.toLowerCase()] ?? "plaintext";
 }
 
-export function trackMonacoLanguages() {
+export function trackMonacoLanguages(plugin: CodeFilesPlugin) {
   try {
     //@ts-expect-error
     window.CodeMirror.modeInfo = trackArray(window.CodeMirror.modeInfo, () => onLanguageChange("CodeMirror"));
@@ -223,7 +223,17 @@ export function trackMonacoLanguages() {
   }
 
   trackMonacoLanguagesChange(monaco, () => onLanguageChange("Monaco"));
+
+  // DEFERRED INIT
+  if (plugin.app.workspace.layoutReady) {
+    setTimeout(() => onLanguageChange("Monaco"), 100); // Delay to let plugins register
+  } else {
+    plugin.app.workspace.onLayoutReady(() => {
+      setTimeout(() => onLanguageChange("Monaco"), 100);
+    });
+  }
 }
+
 
 function trackArray<T>(arr: T[], onChange: () => void): T[] {
   return new Proxy(arr, {
@@ -252,3 +262,4 @@ function trackMonacoLanguagesChange(monaco: any, onChange: () => void) {
     return result;
   };
 }
+

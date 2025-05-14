@@ -64,7 +64,7 @@ export default class CodeFilesPlugin extends Plugin {
 				body: t("REGISTE_ERROR_DESC", e.message)
 			});
 		}
-		trackMonacoLanguages()
+		trackMonacoLanguages(this)
 		registerCustomVisuals();
 		this.registerEvent(
 			this.app.workspace.on("file-menu", (menu, file) => {

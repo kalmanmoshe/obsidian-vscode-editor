@@ -90,7 +90,6 @@ export class FenceEditContext {
 		const langKey = this.editor.getLine(this.start)
 			.replace(codeBlockRegex, "")
 			.match(/\s*(\w)+/)?.[0]||"";
-
 		const language = getLanguage(langKey);
 
 		return { content, language };
