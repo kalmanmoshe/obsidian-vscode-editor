@@ -1,6 +1,6 @@
 import { Editor } from "obsidian";
 import CodeFilesPlugin from "./main";
-
+import { parseNestedCodeBlocks,shiftSections } from "obsidian-dev-utils";
 
 import { getLanguage } from "./ObsidianUtils";
 const codeBlockRegex = /^\s*(`|~){3,}/;
@@ -17,26 +17,6 @@ export class FenceEditContext {
 	static create(plugin: CodeFilesPlugin) {
 		return new FenceEditContext(plugin);
 	}
-	private shiftSections(shift: number,sections: {start:number,end:number}[]) {
-		return sections.map(({start,end})=>({
-			start:start+shift,
-			end:end+shift
-		}))
-	}
-	private parseInternalCodeBlock(codeBlockText: string): {start: number,end:number}[] {
-		const codeBlockLines = codeBlockText.split("\n")
-		const startIndex = codeBlockLines.findIndex((line) => codeBlockRegex.test(line));
-		if (startIndex === -1) return [];
-		const codeBlockDelimiter = codeBlockLines[startIndex].match(codeBlockRegex)?.[0] as string;
-		let endIndex = codeBlockLines.findIndex((line,index) => index > startIndex 
-		&& line.match(new RegExp(`^\\s*${codeBlockDelimiter.charAt(0)}{${codeBlockDelimiter.length},}\\s*$`)));
-		if (endIndex === -1) endIndex = codeBlockLines.length-1;
-		return [
-			{start:startIndex,end:endIndex},
-			...this.shiftSections(startIndex+1,this.parseInternalCodeBlock(codeBlockLines.slice(startIndex+1,endIndex).join("\n"))),
-			...this.shiftSections(endIndex+1,this.parseInternalCodeBlock(codeBlockLines.slice(endIndex+1).join("\n")))
-		]
-	}
 
 	private initializeStartAndEnd() {
 		const cursor = this.editor?.getCursor();
@@ -44,7 +24,7 @@ export class FenceEditContext {
 		if (!this.editor || !cursor) return;
 		const codeBlockLines = this.editor.getValue().split("\n").slice(this.start+1,this.end);
 		const codeBlockText=codeBlockLines.join("\n");
-		const sections = this.shiftSections(this.start+1,this.parseInternalCodeBlock(codeBlockText))
+		const sections = shiftSections(this.start+1,parseNestedCodeBlocks(codeBlockText))
 		const section = sections.find((section) => section.start <= cursor.line &&
 		section.end >= cursor.line);
 		if (section) {
