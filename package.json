@@ -29,7 +29,7 @@
 		"typescript": "4.7.4"
 	},
 	"dependencies": {
-		"monaco-editor": "^0.52.2",
+		"monaco-editor": "^0.43.0",
 		"npm": "^11.3.0",
 		"obsidian-dev-utils": "github:kalmanmoshe/obsidian-dev-utils#main"
 	}
