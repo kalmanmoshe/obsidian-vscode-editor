@@ -35,8 +35,9 @@ export class FenceEditModal extends Modal {
 		const closeButton = this.modalEl.querySelector<HTMLDivElement>(
 			".modal-close-button"
 		)
-		closeButton!.style.background = "var(--modal-background)";
-		closeButton!.style.zIndex = "9999";
+		if (!closeButton) return;
+		closeButton.style.background = "var(--modal-background)";
+		closeButton.style.zIndex = "9999";
 	}
 
 	onClose() {

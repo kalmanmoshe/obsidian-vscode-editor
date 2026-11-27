@@ -10,6 +10,7 @@ import { FenceEditContext } from "./fenceEditContext";
 import { mountCodeEditor } from "./mountCodeEditor";
 import { registerCustomVisuals } from "./registerCustomVisuals";
 import 'monaco-editor/esm/vs/editor/editor.main';
+import '../mystyles.css';
 import { trackMonacoLanguages } from "./ObsidianUtils";
 
 
